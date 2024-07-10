@@ -11,11 +11,11 @@ class MyProfileViewController: UIViewController {
     private var scrollView: UIScrollView!
     private var contentView: UIView!
     
-    private var currentUsernameLabel: UILabel!
-    private var newUsernameLabel: UILabel!
-    private var usernameTextField: UITextField!
-    private var difficultyLabel: UILabel!
-    private var difficultySegmentedControl: UISegmentedControl!
+    private var profileImageView: UIImageView!
+    private var changeProfileImageButton: UIButton!
+    private var currentDisplayNameLabel: UILabel!
+    private var newDisplayNameLabel: UILabel!
+    private var displayNameTextField: UITextField!
     private var saveButton: UIButton!
     
     convenience init(router: AppRouterProtocol) {
@@ -46,23 +46,29 @@ class MyProfileViewController: UIViewController {
     
     private func createViews() {
         gradientView = UIView()
-        
         gradientLayer = CAGradientLayer()
         
-        currentUsernameLabel = UILabel()
-        currentUsernameLabel.text = "Your username:"
+        scrollView = UIScrollView()
+        contentView = UIView()
         
-        newUsernameLabel = UILabel()
-        newUsernameLabel.text = "Change Username:"
+        profileImageView = UIImageView()
+        profileImageView.image = UIImage(systemName: "person.circle")
+        profileImageView.contentMode = .scaleAspectFill
+        profileImageView.layer.cornerRadius = 50
+        profileImageView.clipsToBounds = true
         
-        usernameTextField = UITextField()
-        usernameTextField.placeholder = "New Username"
-        usernameTextField.borderStyle = .roundedRect
+        changeProfileImageButton = UIButton(type: .system)
+        changeProfileImageButton.setTitle("Change Profile Image", for: .normal)
+        changeProfileImageButton.addTarget(self, action: #selector(changeProfileImageTapped), for: .touchUpInside)
         
-        difficultyLabel = UILabel()
-        difficultyLabel.text = "Choose difficulty:"
+        currentDisplayNameLabel = UILabel()
+        currentDisplayNameLabel.text = "Your Display Name:"
         
-        difficultySegmentedControl = UISegmentedControl(items: ["Easy", "Medium", "Hard"])
+        newDisplayNameLabel = UILabel()
+        newDisplayNameLabel.text = "Change Display Name:"
+        
+        displayNameTextField = UITextField()
+        displayNameTextField.placeholder = "New Display Name"
         
         saveButton = UIButton(type: .system)
         saveButton.setTitle("Save", for: .normal)
@@ -71,41 +77,50 @@ class MyProfileViewController: UIViewController {
     
     private func createHierarchy() {
         view.addSubview(gradientView)
-        view.addSubview(currentUsernameLabel)
-        view.addSubview(newUsernameLabel)
-        view.addSubview(usernameTextField)
-        view.addSubview(difficultyLabel)
-        view.addSubview(difficultySegmentedControl)
-        view.addSubview(saveButton)
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        
+        contentView.addSubview(profileImageView)
+        contentView.addSubview(changeProfileImageButton)
+        contentView.addSubview(currentDisplayNameLabel)
+        contentView.addSubview(newDisplayNameLabel)
+        contentView.addSubview(displayNameTextField)
+        contentView.addSubview(saveButton)
     }
     
     private func defineLayout() {
         gradientView.autoPinEdgesToSuperviewEdges()
         
-        currentUsernameLabel.autoAlignAxis(toSuperviewAxis: .vertical)
-        currentUsernameLabel.autoPinEdge(toSuperviewEdge: .top, withInset: 150)
-
-        newUsernameLabel.autoPinEdge(.top, to: .bottom, of: currentUsernameLabel, withOffset: 50)
-        newUsernameLabel.autoPinEdge(.leading, to: .leading, of: view, withOffset: 30)
-        newUsernameLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 100)
-
-        usernameTextField.autoPinEdge(.top, to: .bottom, of: newUsernameLabel, withOffset: 10)
-        usernameTextField.autoPinEdge(.leading, to: .leading, of: view, withOffset: 30)
-        usernameTextField.autoPinEdge(toSuperviewEdge: .trailing, withInset: 20)
-        usernameTextField.autoSetDimension(.height, toSize: 40)
+        scrollView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+        scrollView.autoPinEdge(toSuperviewEdge: .top, withInset: view.safeAreaInsets.top)
         
-        difficultyLabel.autoPinEdge(.top, to: .bottom, of: usernameTextField, withOffset: 30)
-        difficultyLabel.autoPinEdge(.leading, to: .leading, of: view, withOffset: 30)
-        difficultyLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 100)
+        contentView.autoPinEdgesToSuperviewEdges()
+        contentView.autoMatch(.width, to: .width, of: view)
+        
+        profileImageView.autoAlignAxis(toSuperviewAxis: .vertical)
+        profileImageView.autoPinEdge(toSuperviewEdge: .top, withInset: 150)
+        profileImageView.autoSetDimensions(to: CGSize(width: 100, height: 100))
+        
+        changeProfileImageButton.autoAlignAxis(.vertical, toSameAxisOf: profileImageView)
+        changeProfileImageButton.autoPinEdge(.top, to: .bottom, of: profileImageView, withOffset: 10)
+        
+        currentDisplayNameLabel.autoAlignAxis(.vertical, toSameAxisOf: changeProfileImageButton)
+        currentDisplayNameLabel.autoPinEdge(.top, to: .bottom, of: changeProfileImageButton, withOffset: 30)
 
-        difficultySegmentedControl.autoPinEdge(.top, to: .bottom, of: difficultyLabel, withOffset: 10)
-        difficultySegmentedControl.autoPinEdge(toSuperviewEdge: .leading, withInset: 20)
-        difficultySegmentedControl.autoPinEdge(toSuperviewEdge: .trailing, withInset: 20)
-        difficultySegmentedControl.autoSetDimension(.height, toSize: 40)
+        newDisplayNameLabel.autoPinEdge(.top, to: .bottom, of: currentDisplayNameLabel, withOffset: 50)
+        newDisplayNameLabel.autoPinEdge(.leading, to: .leading, of: view, withOffset: 30)
+        newDisplayNameLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 100)
 
-        saveButton.autoPinEdge(.top, to: .bottom, of: difficultySegmentedControl, withOffset: 30)
+        displayNameTextField.autoPinEdge(.top, to: .bottom, of: newDisplayNameLabel, withOffset: 10)
+        displayNameTextField.autoPinEdge(.leading, to: .leading, of: view, withOffset: 30)
+        displayNameTextField.autoPinEdge(toSuperviewEdge: .trailing, withInset: 20)
+        displayNameTextField.autoSetDimension(.height, toSize: 40)
+
+        saveButton.autoPinEdge(.top, to: .bottom, of: displayNameTextField, withOffset: 30)
         saveButton.autoAlignAxis(toSuperviewAxis: .vertical)
         saveButton.autoSetDimensions(to: CGSize(width: 100, height: 50))
+        
+        contentView.autoPinEdge(.bottom, to: .bottom, of: saveButton, withOffset: 40)
     }
     
     private func styleViews() {
@@ -116,19 +131,20 @@ class MyProfileViewController: UIViewController {
         
         gradientView.layer.insertSublayer(gradientLayer, at: 0)
         
-        currentUsernameLabel.font = UIFont.systemFont(ofSize: 24)
-        currentUsernameLabel.font = UIFont.boldSystemFont(ofSize: 24)
-        currentUsernameLabel.textColor = .white
+        changeProfileImageButton.setTitleColor(.white, for: .normal)
         
-        newUsernameLabel.font = UIFont.systemFont(ofSize: 18)
-        newUsernameLabel.textColor = .white
+        displayNameTextField.borderStyle = .roundedRect
         
-        difficultyLabel.textColor = .white
+        currentDisplayNameLabel.font = UIFont.systemFont(ofSize: 24)
+        currentDisplayNameLabel.font = UIFont.boldSystemFont(ofSize: 24)
+        currentDisplayNameLabel.textColor = .white
+        
+        newDisplayNameLabel.font = UIFont.systemFont(ofSize: 18)
+        newDisplayNameLabel.textColor = .white
         
         saveButton.backgroundColor = .systemBlue
         saveButton.setTitleColor(.white, for: .normal)
         saveButton.layer.cornerRadius = 5
-        
     }
     
     override func viewDidLayoutSubviews() {
@@ -143,26 +159,27 @@ class MyProfileViewController: UIViewController {
     private func loadUserDefaults() {
         let userDefaults = UserDefaults.standard
         
-        let username = userDefaults.string(forKey: "username") ?? ""
-        currentUsernameLabel.text = "Your username: \(username)"
-        
-        let difficultyLevel = userDefaults.integer(forKey: "difficultyLevel")
-        difficultySegmentedControl.selectedSegmentIndex = difficultyLevel
+        let displayName = userDefaults.string(forKey: "displayName") ?? ""
+        currentDisplayNameLabel.text = "Your Display Name: \(displayName)"
+    }
+    
+    @objc private func changeProfileImageTapped() {
+        let alert = UIAlertController(title: "Error", message: "Not implemented yet.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
     }
     
     @objc private func saveButtonTapped() {
         let defaults = UserDefaults.standard
         
-        let username = usernameTextField.text ?? ""
-        let difficultyLevel = difficultySegmentedControl.selectedSegmentIndex
+        let displayName = displayNameTextField.text ?? ""
         
-        defaults.set(username, forKey: "username")
-        defaults.set(difficultyLevel, forKey: "difficultyLevel")
+        defaults.set(displayName, forKey: "displayName")
         
         let alert = UIAlertController(title: "Success", message: "Your profile has been saved.", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
         
-        currentUsernameLabel.text = "Your username: \(username)"
+        currentDisplayNameLabel.text = "Your Display Name: \(displayName)"
     }
 }

@@ -64,6 +64,7 @@ class HomeViewController: UIViewController {
         contentView.addSubview(leaderboardButton)
         
         profileButton.addTarget(self, action: #selector(profileButtonTapped), for: .touchUpInside)
+        settingsButton.addTarget(self, action: #selector(settingsButtonTapped), for: .touchUpInside)
     }
     
     private func defineLayout() {
@@ -81,7 +82,6 @@ class HomeViewController: UIViewController {
         profileButton.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 40)
         profileButton.autoAlignAxis(toSuperviewAxis: .vertical)
         profileButton.autoSetDimensions(to: CGSize(width: buttonWidth, height: buttonHeight))
-        
         
         startQuizButton.autoPinEdge(.top, to: .bottom, of: profileButton, withOffset: 40)
         startQuizButton.autoAlignAxis(toSuperviewAxis: .vertical)
@@ -164,5 +164,10 @@ class HomeViewController: UIViewController {
     @objc private func profileButtonTapped() {
         let profileVC = MyProfileViewController()
         navigationController?.pushViewController(profileVC, animated: true)
+    }
+    
+    @objc private func settingsButtonTapped() {
+        let settingsVC = SettingsViewController()
+        navigationController?.pushViewController(settingsVC, animated: true)
     }
 }

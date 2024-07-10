@@ -20,6 +20,7 @@ class LoginViewController: UIViewController {
     private var welcomeLabel: UILabel!
     private var username: UITextField!
     private var password: UITextField!
+    private var displayName: UITextField!
     private var loginButton: UIButton!
     private var signupButton: UIButton!
     
@@ -54,6 +55,9 @@ class LoginViewController: UIViewController {
         password = UITextField()
         password.placeholder = "Password"
         
+        displayName = UITextField()
+        displayName.placeholder = "Display Name"
+        
         loginButton = UIButton(type: .system)
         loginButton.setTitle("Login", for: .normal)
         
@@ -69,6 +73,7 @@ class LoginViewController: UIViewController {
         contentView.addSubview(welcomeLabel)
         contentView.addSubview(username)
         contentView.addSubview(password)
+        contentView.addSubview(displayName)
         contentView.addSubview(loginButton)
         contentView.addSubview(signupButton)
         
@@ -89,6 +94,8 @@ class LoginViewController: UIViewController {
         
         password.borderStyle = .roundedRect
         password.isSecureTextEntry = true
+        
+        displayName.borderStyle = .roundedRect
         
         loginButton.setTitleColor(.white, for: .normal)
         loginButton.backgroundColor = .systemBlue
@@ -123,8 +130,12 @@ class LoginViewController: UIViewController {
         password.autoPinEdge(.top, to: .bottom, of: username, withOffset: 20)
         password.autoPinEdge(.leading, to: .leading, of: view, withOffset: 100)
         password.autoPinEdge(toSuperviewEdge: .trailing, withInset: 100)
+        
+        displayName.autoPinEdge(.top, to: .bottom, of: password, withOffset: 20)
+        displayName.autoPinEdge(.leading, to: .leading, of: view, withOffset: 100)
+        displayName.autoPinEdge(toSuperviewEdge: .trailing, withInset: 100)
 
-        loginButton.autoPinEdge(.top, to: .bottom, of: password, withOffset: 40)
+        loginButton.autoPinEdge(.top, to: .bottom, of: displayName, withOffset: 40)
         loginButton.autoPinEdge(.leading, to: .leading, of: view, withOffset: 150)
         loginButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 150)
         
@@ -145,14 +156,29 @@ class LoginViewController: UIViewController {
     
     @objc private func loginButtonTapped() {
         guard let username = username.text, !username.isEmpty,
-            let password = password.text, !password.isEmpty else {
-            showAlert(message: "Please enter both username and password.")
+            let password = password.text, !password.isEmpty,
+            let displayName = displayName.text, !displayName.isEmpty else {
+            showAlert(message: "Please enter username, password and displayName.")
             return
         }
         
-        UserDefaults.standard.set(username, forKey: "username")
+        let defaults = UserDefaults.standard
+        let users = defaults.object(forKey: "users") as? [[String: String]] ?? []
         
-        router.navigateToHomeScreen()
+        var validLogin = false
+        for user in users {
+            if user["username"] == username && user["password"] == password {
+                validLogin = true
+                UserDefaults.standard.set(username, forKey: "username")
+                UserDefaults.standard.set(displayName, forKey: "displayName")
+                router.navigateToHomeScreen()
+                break
+            }
+        }
+        
+        if !validLogin {
+            showAlert(message: "Invalid username or password.")
+        }
         
         func showAlert(message: String) {
             let alert = UIAlertController(title: "Login", message: message, preferredStyle: .alert)
@@ -162,8 +188,7 @@ class LoginViewController: UIViewController {
     }
     
     @objc private func signupButtonTapped() {
-        //otvori se novi ekran, i onda nutra ima da upise mail, username i dva puta lozinku
-        //ako lozinka nije 2 put ista, onda mora ponoviti
-        //na kraju ima button kao tjt
+        let signUpVC = SignUpViewController()
+        navigationController?.pushViewController(signUpVC, animated: true)
     }
 }
